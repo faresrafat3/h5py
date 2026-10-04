@@ -493,6 +493,8 @@ class Dataset(HLObject):
         different destination type, e.g.:
 
         >>> double_precision = dataset.astype('f8')[0:100:2]
+
+        Raises TypeError if dtype is not a type NumPy can interpret.
         """
         dtype = numpy.dtype(dtype)
         if dtype == self.dtype:
@@ -522,6 +524,8 @@ class Dataset(HLObject):
            variable-width strings instead:
 
            >>> str_array = dataset.astype('T')[:]
+
+        Raises TypeError if the dataset does not hold an HDF5 string datatype.
         """
         string_info = h5t.check_string_dtype(self.dtype)
         if string_info is None:
@@ -774,6 +778,8 @@ class Dataset(HLObject):
     @with_phil
     def __init__(self, bind, *, readonly=False):
         """ Create a new Dataset object by binding to a low-level DatasetID.
+
+        Raises ValueError if the identifier does not refer to a dataset.
         """
         if not isinstance(bind, h5d.DatasetID):
             raise ValueError("%s is not a DatasetID" % bind)
@@ -796,6 +802,10 @@ class Dataset(HLObject):
         The data is not "reshuffled" to fit in the new shape; each axis is
         grown or shrunk independently.  The coordinates of existing data are
         fixed.
+
+        Raises TypeError if the dataset is not stored in chunked format, or if
+        size is not a shape tuple or an integer. Raises OverflowError if a
+        value in the new shape is negative.
         """
         with phil:
             if self.chunks is None:
@@ -831,6 +841,9 @@ class Dataset(HLObject):
 
         Use of this method is preferred to len(dset), as Python's built-in
         len() cannot handle values greater then 2**32 on 32-bit systems.
+
+        Raises TypeError if the dataset has no length, which happens for a
+        scalar dataset and for a null dataspace.
         """
         with phil:
             shape = self.shape
@@ -1149,6 +1162,10 @@ class Dataset(HLObject):
         Selections must be the output of numpy.s_[<args>].
 
         Broadcasting is supported for simple indexing.
+
+        Raises TypeError if the source and destination shapes cannot be
+        broadcast together. An empty dataset is the common case: a destination
+        of shape (1,) cannot be broadcast from a dataset of shape (0,).
         """
         with phil:
             if self._is_empty:
@@ -1174,6 +1191,9 @@ class Dataset(HLObject):
         the output of numpy.s_[<args>].
 
         Broadcasting is supported for simple indexing.
+
+        Raises TypeError if the source and destination shapes cannot be
+        broadcast together.
         """
         with phil:
             if self._is_empty:

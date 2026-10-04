@@ -120,6 +120,9 @@ class AttributeManager(base.MutableMappingHDF5, base.CommonStateObject):
         dtype
             Data type of the attribute.  Overrides data.dtype if both
             are given.
+
+        Raises TypeError if name is not a string or bytes. Raises ValueError
+        if the attribute already exists with a different shape or dtype.
         """
         name = self._e(name)
 
@@ -216,6 +219,10 @@ class AttributeManager(base.MutableMappingHDF5, base.CommonStateObject):
         externally generated files.
 
         If the attribute doesn't exist, it will be automatically created.
+
+        Raises TypeError if name is not a string or bytes, or if the new value
+        cannot be stored in the existing attribute's type. Raises OSError if
+        the attribute exists and cannot be changed.
         """
         with phil:
             if name not in self:

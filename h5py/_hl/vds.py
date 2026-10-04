@@ -86,6 +86,25 @@ class VirtualSource:
     """
     def __init__(self, path_or_dataset, name=None,
                  shape=None, dtype=None, maxshape=None):
+        """ Describe the source data for one part of a virtual dataset.
+
+        path_or_dataset
+            A Dataset to take the data from, or the path to a file as a
+            string. When a Dataset is given, name, shape, dtype and maxshape
+            must all be left as None; they are read from the dataset.
+        name
+            Name of the dataset within the source file. Required when a path
+            is given.
+        shape
+            Shape of the source data. Required when a path is given.
+        dtype
+            Data type of the source data.
+        maxshape
+            Maximum shape of the source data. Use None for an unlimited axis.
+
+        Raises TypeError if a Dataset is passed together with any other
+        argument, or if a path is given without name or shape.
+        """
         from .dataset import Dataset
         if isinstance(path_or_dataset, Dataset):
             failed = {k: v

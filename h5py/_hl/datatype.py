@@ -37,6 +37,8 @@ class Datatype(HLObject):
     @with_phil
     def __init__(self, bind):
         """ Create a new Datatype object by binding to a low-level TypeID.
+
+        Raises ValueError if the identifier does not refer to a datatype.
         """
         if not isinstance(bind, TypeID):
             raise ValueError("%s is not a TypeID" % bind)

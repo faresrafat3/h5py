@@ -298,6 +298,9 @@ class HLObject(CommonStateObject):
 
         This is always equivalent to obj.file[posixpath.dirname(obj.name)].
         ValueError if this object is anonymous.
+
+        Raises ValueError if this object is anonymous, that is, when it has no
+        name and therefore no parent group.
         """
         if self.name is None:
             raise ValueError("Parent of an anonymous object is undefined")

@@ -80,6 +80,8 @@ class Group(HLObject, MutableMappingHDF5):
 
     def __init__(self, bind):
         """ Create a new Group object by binding to a low-level GroupID.
+
+        Raises ValueError if the identifier does not refer to a group.
         """
         with phil:
             if not isinstance(bind, h5g.GroupID):
@@ -98,6 +100,9 @@ class Group(HLObject, MutableMappingHDF5):
         track_times: bool or None, default: False
             If True, store timestamps for this group in the file.
             If None, fall back to the default value.
+
+        Raises TypeError if name is not a string or bytes. Raises ValueError
+        if the group already exists.
         """
         if track_order is None:
             track_order = h5.get_config().track_order
@@ -401,7 +406,7 @@ class Group(HLObject, MutableMappingHDF5):
         """Return a group, creating it if it doesn't exist.
 
         TypeError is raised if something with that name already exists that
-        isn't a group.
+        isn't a group, or if name is not a string or bytes.
         """
         with phil:
             if name not in self:
@@ -492,6 +497,10 @@ class Group(HLObject, MutableMappingHDF5):
 
         >>> cls = group.get('foo', getclass=True)
         >>> if cls == SoftLink:
+
+        Raises TypeError if name is not a string or bytes. Raises RuntimeError
+        if elink_mode is not "r", "r+" or None. Raises ValueError if
+        elink_locking is not None, True, False or "best-effort".
         """
         # pylint: disable=arguments-differ
 
@@ -658,6 +667,7 @@ class Group(HLObject, MutableMappingHDF5):
         >>> list(f.keys())
         ['MyGroup', 'MyCopy']
 
+        Raises TypeError if name or newname is not a string or bytes.
         """
         with phil:
             if isinstance(source, HLObject):

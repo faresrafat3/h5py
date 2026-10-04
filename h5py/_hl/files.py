@@ -371,7 +371,14 @@ class File(Group):
     @property
     @with_phil
     def swmr_mode(self):
-        """ Controls single-writer multiple-reader mode """
+        """ Controls single-writer multiple-reader mode.
+
+        Reading returns True when the file was opened for SWMR. Setting the
+        property to True starts SWMR write mode.
+
+        Raises ValueError when the value is set to False: SWMR mode cannot be
+        turned off once it is on.
+        """
         return bool(self.id.get_intent() & (h5f.ACC_SWMR_READ | h5f.ACC_SWMR_WRITE))
 
     @swmr_mode.setter
@@ -510,6 +517,12 @@ class File(Group):
 
         Additional keywords
             Passed on to the selected file driver.
+
+        Raises ValueError if the mode is not one of "r", "r+", "w", "w-", "x"
+        or "a", or if the driver name is not registered. Raises
+        FileNotFoundError if the mode is "r" or "r+" and the file does not
+        exist. Raises FileExistsError if the mode is "x" and the file already
+        exists.
         """
         # Automatically select the ros3 driver if it's an S3 URL.
         # As the other drivers currently do not support HTTP(S), the ros3 driver is
@@ -602,6 +615,9 @@ class File(Group):
 
         Other keyword arguments are like File(), although name, mode,
         driver and locking can't be passed.
+
+        Raises TypeError if the file image does not support the buffer
+        interface, or if name, mode, driver or locking is passed.
         """
         for k in ('driver', 'locking', 'backing_store'):
             if k in kwargs:
